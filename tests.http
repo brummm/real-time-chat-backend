@@ -1,0 +1,25 @@
+POST http://localhost:3301/users/login HTTP/1.1
+content-type: application/json
+
+{
+	"email": "test@example.com",
+	"password": "123456",
+	"equipmentId": "Linux - Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.99 Mobile Safari/537.36"
+}
+
+###
+
+POST http://localhost:3301/users/register HTTP/1.1
+content-type: application/json
+
+{
+	"user": {
+		"firstName": "John",
+		"lastName": "Doe",
+		"userName": "jdoe",
+		"email": "test@example.com",
+		"password": "123456",
+		"birth": "Mon Jul 25 1983 00:00:00 GMT-0300 (Horário Padrão de Brasília)"
+	},
+	"equipmentId": "Linux - Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.99 Mobile Safari/537.36"
+}
