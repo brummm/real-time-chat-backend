@@ -48,23 +48,20 @@ UserRouter.post(`${PREFIX}/register`, async (req: Request, res: Response) => {
 
 UserRouter.post(`${PREFIX}/login`, async (req: Request, res: Response) => {
 	try {
-		console.log(req.cookies);
-		throw Error('')
+		const { email, password, equipmentId } = req.body;
+		if (!email || !password) {
+			throw new Error("Invalid username and/or password.");
+		}
 
-		// const { email, password, equipmentId } = req.body;
-		// if (!email || !password) {
-		// 	throw new Error("Invalid username and/or password.");
-		// }
+		const login = await userResolver.login(email, password, equipmentId);
 
-		// const login = await userResolver.login(email, password, equipmentId);
+		if (login === null) {
+			throw new Error('There is no user with such credentials.')
+		}
 
-		// if (login === null) {
-		// 	throw new Error('There is no user with such credentials.')
-		// }
-
-		// const { user, token } = login;
-		// createAccessTokenCookie(token, res);
-		// return res.status(200).send({ user });
+		const { user, token } = login;
+		createAccessTokenCookie(token, res);
+		return res.status(200).send({ user });
 	} catch (e: any) {
 		res.status(400).send({ error: e.message });
 	}
