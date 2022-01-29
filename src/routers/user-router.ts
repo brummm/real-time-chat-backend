@@ -6,13 +6,14 @@ export const UserRouter = Router();
 
 const PREFIX = "/users";
 
-UserRouter.get(PREFIX, (req: Request, res: Response) => {
-	res.send({
-		name: "Hello",
-		lastName: "World",
-	});
+UserRouter.get(PREFIX, async (req: Request, res: Response) => {
+	try {
+		const users = await userResolver.listUsers();
+		res.send(users);
+	} catch(e) {
+		res.status(500).send("There was an error while trying to list users.")
+	}
 });
-
 
 
 UserRouter.post(`${PREFIX}/register`, async (req: Request, res: Response) => {

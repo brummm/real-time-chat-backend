@@ -14,6 +14,7 @@ interface IToken {
 	token: string;
 }
 export interface IUser {
+	_id?: any;
 	firstName: string;
 	lastName: string;
 	fullName?: string;
@@ -226,12 +227,14 @@ userSchema.statics.alreadyExistsWithSameEmail = async (email) => {
 	return user !== null;
 };
 
+export const HASH_PASSWORD_SALT = 8;
+
 // Hashing password before saving
 userSchema.pre("save", async function (next) {
 	const user = this;
 
 	if (user.isModified("password")) {
-		user.password = await bcrypt.hash(user.password, 8);
+		user.password = await bcrypt.hash(user.password, HASH_PASSWORD_SALT);
 	}
 
 	next();

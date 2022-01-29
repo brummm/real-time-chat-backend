@@ -2,7 +2,7 @@ import jwt, { JwtPayload } from "jsonwebtoken";
 import { NextFunction, Request, Response, Router } from "express";
 import { User, IUserDocument } from "../database/models/User";
 
-const ACCESS_TOKEN_COOKIE_NAME = "access_token";
+export const ACCESS_TOKEN_COOKIE_NAME = "access_token";
 
 export interface RequestWithAuth extends Request {
 	user: IUserDocument;

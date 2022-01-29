@@ -1,4 +1,3 @@
-import { connect } from "./database/mongoose";
 import { createApp } from "./app";
 import { UserRouter } from "./routers/user-router";
 
@@ -12,4 +11,4 @@ process.on("unhandledRejection", (err) => {
 	console.error(`${new Date().toUTCString()} unhandledRejection:`, err);
 });
 
-createApp(port, [UserRouter], connect).start();
+createApp(port, [UserRouter]).start();

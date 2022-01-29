@@ -41,7 +41,6 @@ const createUser = async (
 			token,
 		};
 	} catch (e: any) {
-		Mongoose;
 		if (e.code === 11000) {
 			return undefined;
 		}
@@ -66,7 +65,12 @@ const login = async (
 	};
 };
 
+const listUsers = async () => {
+	return User.find({});
+}
+
 export default {
 	createUser,
 	login,
+	listUsers
 };

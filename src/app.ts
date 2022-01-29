@@ -1,9 +1,9 @@
 import express, { Request, Response, Router } from "express";
+import { connect } from "./database/mongoose";
 
 export const createApp = (
 	port: number | string,
-	routers: Router[],
-	connect: CallableFunction
+	routers: Router[]
 ): { app: Express.Application; start: CallableFunction } => {
 	const app = express();
 
