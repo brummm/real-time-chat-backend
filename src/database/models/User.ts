@@ -1,6 +1,7 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { model, Schema, Document, Model, ObjectId } from "mongoose";
+import mongodb from 'mongodb';
 import validator from "validator";
 
 export const USER_LEVELS = {
@@ -110,18 +111,25 @@ const userSchema = new Schema<IUserDocument>(
 	}
 );
 
-userSchema.methods.generateAuthToken = async function (
+export const signInToken = (
+	id: mongodb.ObjectId,
 	equipmentId: string
-): Promise<string> {
-	const user = this;
-
-	const token: string = jwt.sign(
-		{ _id: user._id.toString(), equipmentId },
+): string => {
+	return jwt.sign(
+		{ _id: id.toString(), equipmentId },
 		<string>process.env.JWT_SECRET,
 		{
 			expiresIn: "7 days",
 		}
 	);
+};
+
+userSchema.methods.generateAuthToken = async function (
+	equipmentId: string
+): Promise<string> {
+	const user = <IUserDocument>this;
+
+	const token = signInToken(user._id, equipmentId);
 
 	user.tokens = user.tokens.concat({ token });
 	await user.save();

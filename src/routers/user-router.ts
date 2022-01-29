@@ -1,5 +1,5 @@
 import { Request, Response, Router } from "express";
-import { createAccessTokenCookie } from "../middleware/auth";
+import auth, { createAccessTokenCookie } from "../middleware/auth";
 import userResolver from "../resolvers/user-resolver";
 
 export const UserRouter = Router();
@@ -10,11 +10,10 @@ UserRouter.get(PREFIX, async (req: Request, res: Response) => {
 	try {
 		const users = await userResolver.listUsers();
 		res.send(users);
-	} catch(e) {
-		res.status(500).send("There was an error while trying to list users.")
+	} catch (e) {
+		res.status(500).send("There was an error while trying to list users.");
 	}
 });
-
 
 UserRouter.post(`${PREFIX}/register`, async (req: Request, res: Response) => {
 	try {
@@ -57,7 +56,7 @@ UserRouter.post(`${PREFIX}/login`, async (req: Request, res: Response) => {
 		const login = await userResolver.login(email, password, equipmentId);
 
 		if (login === null) {
-			throw new Error('There is no user with such credentials.')
+			throw new Error("There is no user with such credentials.");
 		}
 
 		const { user, token } = login;
@@ -67,3 +66,22 @@ UserRouter.post(`${PREFIX}/login`, async (req: Request, res: Response) => {
 		res.status(400).send({ error: e.message });
 	}
 });
+
+UserRouter.get(
+	"/users/:userName",
+	auth,
+	async (req: Request, res: Response) => {
+		try {
+			const { userName } = req.params;
+			const user = await userResolver.findByUserName(userName);
+			if (!user) {
+				throw new Error();
+			}
+			return res.status(200).send({ user });
+		} catch (e) {
+			console.log(e);
+
+			return res.status(404).send();
+		}
+	}
+);

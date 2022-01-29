@@ -67,10 +67,17 @@ const login = async (
 
 const listUsers = async () => {
 	return User.find({});
-}
+};
+
+const findByUserName = async (
+	userName: string
+): Promise<IUserDocument | null> => {
+	return User.findOne({ userName });
+};
 
 export default {
 	createUser,
 	login,
-	listUsers
+	listUsers,
+	findByUserName,
 };

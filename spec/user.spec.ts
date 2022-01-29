@@ -1,5 +1,5 @@
 import { Chance } from "chance";
-import { users } from "./fixtures/users";
+import { users, loggedUser } from "./fixtures/users";
 import request from "supertest";
 import { createApp } from "../src/app";
 import { User } from "../src/database/models/User";
@@ -69,6 +69,21 @@ describe("User Route tests", () => {
 
 			const user = await User.findOne({ email });
 			expect(user?.tokens.length).toBeGreaterThan(0);
+		});
+	});
+
+	describe("/users/:userName", () => {
+		it("Should get the queried user data if userName is found and the user is logged in", async () => {
+			const { userName, email } = users[0];
+			const { token } = loggedUser.tokens[0];
+			await request(app)
+				.get(`/users/${userName}`)
+				.set("Cookie", [`${ACCESS_TOKEN_COOKIE_NAME}=${token}`])
+				.expect(200)
+				.expect(({ body }) => {
+					expect(body.error).toBeUndefined();
+					expect(body.user.email).toBe(email);
+				});
 		});
 	});
 });

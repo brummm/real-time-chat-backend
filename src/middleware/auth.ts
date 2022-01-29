@@ -9,15 +9,25 @@ export interface RequestWithAuth extends Request {
 	token: string;
 }
 
-export const auth = async (req: RequestWithAuth, res: Response, next: NextFunction) => {
+export const auth = async (
+	req: RequestWithAuth | any,
+	res: Response,
+	next: NextFunction
+) => {
 	try {
-		const token = <string>req.header("Authorization")?.replace("Bearer ", "");
+		const token = req.cookies[ACCESS_TOKEN_COOKIE_NAME];
+
 		const { _id } = <JwtPayload>(
 			jwt.verify(token, <string>process.env.JWT_SECRET)
 		);
-		const user = await User.findOne({ _id, tokens: { token } });
+		const user = await User.findOne({ _id });
 
 		if (!user) {
+			throw new Error();
+		}
+
+		const foundToken = user!.tokens.find((_token) => token == _token.token);
+		if (!foundToken) {
 			throw new Error();
 		}
 

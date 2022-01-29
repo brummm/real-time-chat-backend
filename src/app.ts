@@ -1,5 +1,6 @@
 import express, { Request, Response, Router } from "express";
 import { connect } from "./database/mongoose";
+import cookieParser from 'cookie-parser';
 
 export const createApp = (
 	port: number | string,
@@ -8,6 +9,7 @@ export const createApp = (
 	const app = express();
 
 	app.use(express.json());
+	app.use(cookieParser())
 
 	routers.forEach((router) => {
 		app.use(router);
