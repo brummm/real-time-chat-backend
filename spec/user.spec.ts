@@ -72,12 +72,12 @@ describe("User Route tests", () => {
 		});
 	});
 
-	describe("/users/:userName", () => {
+	describe("/users/profile/:userName", () => {
 		it("Should get the queried user data if userName is found and the user is logged in", async () => {
 			const { userName, email } = users[0];
 			const { token } = loggedUser.tokens[0];
 			await request(app)
-				.get(`/users/${userName}`)
+				.get(`/users/profile/${userName}`)
 				.set("Cookie", [`${ACCESS_TOKEN_COOKIE_NAME}=${token}`])
 				.expect(200)
 				.expect(({ body }) => {

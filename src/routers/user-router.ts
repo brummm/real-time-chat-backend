@@ -38,7 +38,7 @@ UserRouter.post(`${PREFIX}/register`, async (req: Request, res: Response) => {
 
 		const { user, token } = create;
 
-		createAccessTokenCookie(token, res);
+		createAccessTokenCookie(token, req, res);
 
 		res.status(201).send({ user });
 	} catch (e: any) {
@@ -60,15 +60,19 @@ UserRouter.post(`${PREFIX}/login`, async (req: Request, res: Response) => {
 		}
 
 		const { user, token } = login;
-		createAccessTokenCookie(token, res);
-		return res.status(200).send({ user });
+		createAccessTokenCookie(token, req, res);
+		res.status(200).send({ user });
 	} catch (e: any) {
 		res.status(400).send({ error: e.message });
 	}
 });
 
+UserRouter.get("/users/session", auth, async (req: Request, res: Response) => {
+	res.status(200).send({ success: true });
+});
+
 UserRouter.get(
-	"/users/:userName",
+	"/users/profile/:userName",
 	auth,
 	async (req: Request, res: Response) => {
 		try {
@@ -77,11 +81,11 @@ UserRouter.get(
 			if (!user) {
 				throw new Error();
 			}
-			return res.status(200).send({ user });
+			res.status(200).send({ user });
 		} catch (e) {
 			console.log(e);
 
-			return res.status(404).send();
+			res.status(404).send();
 		}
 	}
 );

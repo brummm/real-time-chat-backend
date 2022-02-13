@@ -1,8 +1,13 @@
+import { CookieOptions, NextFunction, Request, Response } from "express";
 import jwt, { JwtPayload } from "jsonwebtoken";
-import { NextFunction, Request, Response, Router } from "express";
-import { User, IUserDocument } from "../database/models/User";
+import { isDevelopment } from "../common/server";
+import { IUserDocument, User } from "../database/models/User";
 
-export const ACCESS_TOKEN_COOKIE_NAME = "access_token";
+export const ACCESS_TOKEN_COOKIE_NAME = "token";
+export const UNAUTHORIZED = {
+	message: "Please, authenticate.",
+	httpStatusCode: 401,
+};
 
 export interface RequestWithAuth extends Request {
 	user: IUserDocument;
@@ -35,15 +40,33 @@ export const auth = async (
 		req.user = user;
 		next();
 	} catch (e) {
-		res.status(401).send({ error: "Please, authenticate." });
+		res.clearCookie(ACCESS_TOKEN_COOKIE_NAME);
+		res
+			.status(UNAUTHORIZED.httpStatusCode)
+			.send({ error: UNAUTHORIZED.message });
 	}
 };
 
-export const createAccessTokenCookie = (token: string, res: Response): void => {
-	res.cookie(ACCESS_TOKEN_COOKIE_NAME, token, {
+const getDateDaysInFuture = (days: number): Date => {
+	const date = new Date();
+	date.setDate(date.getDate() + days);
+	return date;
+};
+
+export const createAccessTokenCookie = (
+	token: string,
+	req: Request,
+	res: Response
+): void => {
+	const cookieOptions: CookieOptions = {
 		secure: true,
 		httpOnly: true,
-	});
+		expires: getDateDaysInFuture(7),
+	};
+	if (!isDevelopment()) {
+		cookieOptions.domain = req.get("origin");
+	}
+	res.cookie(ACCESS_TOKEN_COOKIE_NAME, token, cookieOptions);
 };
 
 export default auth;
