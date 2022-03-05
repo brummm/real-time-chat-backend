@@ -3,7 +3,7 @@ import { users, loggedUser } from "./fixtures/users";
 import request from "supertest";
 import { createApp } from "../src/app";
 import { User } from "../src/database/models/User";
-import { UserRouter } from "../src/routers/user-router";
+import UserRouter from "../src/routers/user-router";
 import { ACCESS_TOKEN_COOKIE_NAME } from "../src/middleware/auth";
 const chance = new Chance();
 

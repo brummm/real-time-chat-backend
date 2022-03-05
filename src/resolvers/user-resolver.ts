@@ -1,6 +1,6 @@
-import { IUserDocument, User } from "../database/models/User";
 import bcrypt from "bcryptjs";
-import { Mongoose, Error } from "mongoose";
+import { Error } from "mongoose";
+import { IUserDocument, User } from "../database/models/User";
 
 const stringToDate = (strDate: string): Date | null => {
 	try {

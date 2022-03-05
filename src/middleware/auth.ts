@@ -62,6 +62,7 @@ export const createAccessTokenCookie = (
 		secure: true,
 		httpOnly: true,
 		expires: getDateDaysInFuture(7),
+		sameSite: "lax",
 	};
 	if (!isDevelopment()) {
 		cookieOptions.domain = req.get("origin");

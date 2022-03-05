@@ -3,7 +3,7 @@ import { IChatMessage } from "../database/models/Chat";
 import auth, { RequestWithAuth } from "../middleware/auth";
 import chatResolver from "../resolvers/chat-resolver";
 
-export const ChatRouter = Router();
+const ChatRouter = Router();
 
 const PREFIX = "/chats";
 
@@ -22,8 +22,31 @@ ChatRouter.get(
 	}
 );
 
+ChatRouter.get(
+	`${PREFIX}/:id`,
+	auth,
+	async (req: RequestWithAuth | any, res: Response) => {
+		try {
+			const { id } = req.params;
+			if (!id) {
+				return res.status(400).send();
+			}
+			const chat = await chatResolver.getChatFromUser(id, req.user._id);
+
+			if (!chat) {
+				return res.status(404).send();
+			}
+
+			res.status(200).send({ chat });
+		} catch (e) {
+			console.error(e);
+			res.status(500).send();
+		}
+	}
+);
+
 ChatRouter.post(
-	`${PREFIX}/start`,
+	`${PREFIX}`,
 	auth,
 	async (req: RequestWithAuth | any, res: Response) => {
 		try {
@@ -32,24 +55,25 @@ ChatRouter.post(
 				message,
 			}: {
 				userIds: string[];
-				message: string;
+				message?: string;
 			} = req.body;
-			if (!userIds || !userIds.length || message === undefined) {
+			if (!userIds || !userIds.length) {
 				throw new Error();
 			}
 			const owner = req.user.id;
-			const chatMessage: IChatMessage = { message, owner };
+			const chatMessage = message ? { message, owner } : undefined;
 			userIds.unshift(owner);
 			const chat = await chatResolver.createChat(userIds, chatMessage);
 			res.status(201).send(chat);
 		} catch (e) {
+			console.error(e);
 			res.status(400).send();
 		}
 	}
 );
 
-ChatRouter.post(
-	`${PREFIX}/respond`,
+ChatRouter.put(
+	`${PREFIX}`,
 	auth,
 	async (req: RequestWithAuth | any, res: Response) => {
 		try {
@@ -66,3 +90,5 @@ ChatRouter.post(
 		}
 	}
 );
+
+export default ChatRouter;

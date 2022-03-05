@@ -2,7 +2,7 @@ import { Request, Response, Router } from "express";
 import auth, { createAccessTokenCookie } from "../middleware/auth";
 import userResolver from "../resolvers/user-resolver";
 
-export const UserRouter = Router();
+const UserRouter = Router();
 
 const PREFIX = "/users";
 
@@ -89,3 +89,5 @@ UserRouter.get(
 		}
 	}
 );
+
+export default UserRouter;

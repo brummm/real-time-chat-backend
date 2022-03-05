@@ -1,7 +1,7 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { model, Schema, Document, Model, ObjectId } from "mongoose";
-import mongodb from 'mongodb';
+import mongodb from "mongodb";
 import validator from "validator";
 
 export const USER_LEVELS = {
@@ -137,20 +137,15 @@ userSchema.methods.generateAuthToken = async function (
 	return token;
 };
 
+export const USERS_PUBLIC_DATA = ["id", "firstName", "lastName", "userName"];
+
 userSchema.methods.toJSON = function () {
 	const user = this;
 
 	const publicProfile: any = {};
-	const publicData = [
-		"id",
-		"firstName",
-		"lastName",
-		"userName",
-		"email",
-		"level",
-		"birth",
-	];
-	publicData.forEach(($public) => (publicProfile[$public] = user[$public]));
+	USERS_PUBLIC_DATA.forEach(
+		($public) => (publicProfile[$public] = user[$public])
+	);
 
 	return publicProfile;
 };

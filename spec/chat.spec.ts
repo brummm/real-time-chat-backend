@@ -1,5 +1,5 @@
 import { createApp } from "../src/app";
-import { ChatRouter } from "../src/routers/chat-router";
+import ChatRouter from "../src/routers/chat-router";
 import request from "supertest";
 import {
 	getLoggedUserAndCookieString,

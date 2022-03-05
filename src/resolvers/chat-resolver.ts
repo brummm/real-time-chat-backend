@@ -1,19 +1,32 @@
 import { Chat, IChatDocument, IChatMessage } from "../database/models/Chat";
 import { ObjectId } from "mongodb";
-import { User } from "../database/models/User";
+import { USERS_PUBLIC_DATA } from "../database/models/User";
 
 export default {
 	async listChats(userId: ObjectId): Promise<IChatDocument[]> {
-		return await Chat.find({ 'users.userId': userId });
+		return await Chat.find({ users: userId })
+			.lean()
+			.populate("users", USERS_PUBLIC_DATA);
+	},
+
+	async getChatFromUser(
+		chatId: string,
+		userId: ObjectId
+	): Promise<IChatDocument | null> {
+		return await Chat.findOne({ _id: new ObjectId(chatId), users: userId })
+			.lean()
+			.populate("users", USERS_PUBLIC_DATA);
 	},
 
 	async createChat(
 		userIds: string[],
-		message: IChatMessage
+		message?: IChatMessage
 	): Promise<IChatDocument> {
+		const messages = [];
+		if (message) messages.push(message);
 		const chat = new Chat({
-			users: userIds.map((id) => ({ userId: new ObjectId(id) })),
-			messages: [message],
+			users: userIds.map((id) => new ObjectId(id)),
+			messages,
 		});
 		await chat.save();
 		return chat;
@@ -26,7 +39,7 @@ export default {
 		const chat = await Chat.findById(chatId);
 		if (
 			!chat ||
-			!chat.users.some(({ userId }) => userId.toString() === message.owner)
+			!chat.users.some((user) => user.toString() === message.owner)
 		) {
 			return null;
 		}
