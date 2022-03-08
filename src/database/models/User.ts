@@ -137,7 +137,7 @@ userSchema.methods.generateAuthToken = async function (
 	return token;
 };
 
-export const USERS_PUBLIC_DATA = ["id", "firstName", "lastName", "userName"];
+export const USERS_PUBLIC_DATA = ["_id", "firstName", "lastName", "userName"];
 
 userSchema.methods.toJSON = function () {
 	const user = this;
@@ -150,16 +150,17 @@ userSchema.methods.toJSON = function () {
 	return publicProfile;
 };
 
-userSchema.statics.findByCredentials = async (email, password) => {
+export const SIGNIN_ERROR = "Invalid username and/or password.";
+userSchema.statics.findByCredentials = async (email, password): Promise<IUserDocument> => {
 	const user = await User.findOne({ email });
 
 	if (!user) {
-		throw new Error("Unable to login");
+		throw new Error(SIGNIN_ERROR);
 	}
 
 	const isMatch = await bcrypt.compare(password, user.password);
 	if (!isMatch) {
-		throw new Error("Unable to login");
+		throw new Error(SIGNIN_ERROR);
 	}
 
 	return user;

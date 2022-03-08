@@ -1,4 +1,4 @@
-import { createSocket } from "./socket";
+import { createSocket } from "./socket/socket";
 import fs from "fs";
 import path from "path";
 import { createApp } from "./app";

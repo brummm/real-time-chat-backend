@@ -1,4 +1,5 @@
 import { Request, Response, Router } from "express";
+import { SIGNIN_ERROR } from "../database/models/User";
 import auth, { createAccessTokenCookie } from "../middleware/auth";
 import userResolver from "../resolvers/user-resolver";
 
@@ -50,16 +51,12 @@ UserRouter.post(`${PREFIX}/login`, async (req: Request, res: Response) => {
 	try {
 		const { email, password, equipmentId } = req.body;
 		if (!email || !password) {
-			throw new Error("Invalid username and/or password.");
+			throw new Error(SIGNIN_ERROR);
 		}
 
 		const login = await userResolver.login(email, password, equipmentId);
 
-		if (login === null) {
-			throw new Error("There is no user with such credentials.");
-		}
-
-		const { user, token } = login;
+		const { user, token } = login!;
 		createAccessTokenCookie(token, req, res);
 		res.status(200).send({ user });
 	} catch (e: any) {
@@ -68,7 +65,7 @@ UserRouter.post(`${PREFIX}/login`, async (req: Request, res: Response) => {
 });
 
 UserRouter.get("/users/session", auth, async (req: Request, res: Response) => {
-	res.status(200).send({ success: true });
+	res.status(200).send({ success: true, user: req.user });
 });
 
 UserRouter.get(
@@ -85,7 +82,7 @@ UserRouter.get(
 		} catch (e) {
 			console.log(e);
 
-			res.status(404).send();
+			res.status(404).send({error: "User not found."});
 		}
 	}
 );

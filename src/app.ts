@@ -2,10 +2,8 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import express, { Router } from "express";
 import http from "http";
-import { Server } from "socket.io";
-import { connect } from "./database/mongoose";
-import { createSocket } from "./socket";
 import corsOptions from './config/cors';
+import { connect } from "./database/mongoose";
 
 
 export const createApp = (

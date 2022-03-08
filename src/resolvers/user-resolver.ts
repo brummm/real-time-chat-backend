@@ -41,10 +41,10 @@ const createUser = async (
 			token,
 		};
 	} catch (e: any) {
+		console.error(e);
 		if (e.code === 11000) {
 			return undefined;
 		}
-		console.error(e);
 		throw new Error("");
 	}
 };
