@@ -1,7 +1,7 @@
 import { Server } from "socket.io";
 import { Chat, IChatMessage } from "../../database/models/Chat";
 import { authSocket } from "../../middleware/auth";
-import chatResolver from "../../resolvers/chat-resolver";
+import chatService from "../../services/chat-service";
 
 export default (io: Server, token: string) => {
 	const chatNamespace = io.of("/chat");
@@ -25,7 +25,7 @@ export default (io: Server, token: string) => {
 					message,
 					owner: user._id,
 				};
-				const newMessage = await chatResolver.respondToChat(chatId, chatMessage);
+				const newMessage = await chatService.respondToChat(chatId, chatMessage);
 				console.log(newMessage);
 
 				if (newMessage) {

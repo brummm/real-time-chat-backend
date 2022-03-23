@@ -1,7 +1,7 @@
 import { Request, Response, Router } from "express";
 import { SIGNIN_ERROR } from "../database/models/User";
 import auth, { createAccessTokenCookie } from "../middleware/auth";
-import userResolver from "../resolvers/user-resolver";
+import userService from "../services/user-service";
 
 const UserRouter = Router();
 
@@ -9,7 +9,7 @@ const PREFIX = "/users";
 
 UserRouter.get(PREFIX, async (req: Request, res: Response) => {
 	try {
-		const users = await userResolver.listUsers();
+		const users = await userService.listUsers();
 		res.send(users);
 	} catch (e) {
 		res.status(500).send("There was an error while trying to list users.");
@@ -21,7 +21,7 @@ UserRouter.post(`${PREFIX}/register`, async (req: Request, res: Response) => {
 		const { user: userData, equipmentId } = req.body;
 		const { firstName, lastName, userName, email, password, birth } = userData;
 
-		const create = await userResolver.createUser(
+		const create = await userService.createUser(
 			{
 				firstName,
 				lastName,
@@ -37,6 +37,7 @@ UserRouter.post(`${PREFIX}/register`, async (req: Request, res: Response) => {
 			throw new Error("Username is already taken.");
 		}
 
+		// TODO: get equipmentId and call userResolver.login
 		const { user, token } = create;
 
 		createAccessTokenCookie(token, req, res);
@@ -54,7 +55,7 @@ UserRouter.post(`${PREFIX}/login`, async (req: Request, res: Response) => {
 			throw new Error(SIGNIN_ERROR);
 		}
 
-		const login = await userResolver.login(email, password, equipmentId);
+		const login = await userService.login(email, password, equipmentId);
 
 		const { user, token } = login!;
 		createAccessTokenCookie(token, req, res);
@@ -74,7 +75,7 @@ UserRouter.get(
 	async (req: Request, res: Response) => {
 		try {
 			const { userName } = req.params;
-			const user = await userResolver.findByUserName(userName);
+			const user = await userService.findByUserName(userName);
 			if (!user) {
 				throw new Error();
 			}

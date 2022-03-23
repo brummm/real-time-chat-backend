@@ -22,7 +22,7 @@ describe("Chat Route tests", () => {
 		it("Should list all chats from a user", async () => {
 			const chatsFromLoggedUser = chats.filter((chat) =>
 				chat.users.some(
-					(user) => user.userId.toString() === loggedUser._id.toString()
+					(user) => user.toString() === loggedUser._id.toString()
 				)
 			);
 

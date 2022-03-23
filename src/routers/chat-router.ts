@@ -1,7 +1,7 @@
 import { Response, Router } from "express";
 import { IChatMessage } from "../database/models/Chat";
 import auth from "../middleware/auth";
-import chatResolver from "../resolvers/chat-resolver";
+import chatService from "../services/chat-service";
 
 const ChatRouter = Router();
 
@@ -12,7 +12,7 @@ ChatRouter.get(
 	auth,
 	async (req: Request | any, res: Response) => {
 		try {
-			const chats = await chatResolver.listChats(req.user._id);
+			const chats = await chatService.listChats(req.user._id);
 
 			res.status(200).send({ chats });
 		} catch (e) {
@@ -31,7 +31,7 @@ ChatRouter.get(
 			if (!id) {
 				return res.status(400).send();
 			}
-			const chat = await chatResolver.getChatFromUser(id, req.user._id);
+			const chat = await chatService.getChatFromUser(id, req.user._id);
 
 			if (!chat) {
 				return res.status(404).send();
@@ -63,7 +63,7 @@ ChatRouter.post(
 			const owner = req.user.id;
 			const chatMessage = message ? { message, owner } : undefined;
 			userIds.unshift(owner);
-			const chat = await chatResolver.createOrReturnChat(userIds, chatMessage);
+			const chat = await chatService.createOrReturnChat(userIds, chatMessage);
 			res.status(201).send(chat);
 		} catch (e) {
 			console.error(e);
@@ -80,7 +80,7 @@ ChatRouter.put(
 			const { message, chatId, inResponseTo } = req.body;
 			const owner = req.user.id;
 			const chatMessage: IChatMessage = { message, owner, inResponseTo };
-			const chat = await chatResolver.respondToChat(chatId, chatMessage);
+			const chat = await chatService.respondToChat(chatId, chatMessage);
 			if (chat === null) {
 				throw new Error();
 			}

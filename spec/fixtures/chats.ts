@@ -11,7 +11,7 @@ const userThreeId = users[3]._id;
 export const chats: IChat[] = [
 	{
 		_id: new ObjectId(),
-		users: [{ userId: loggedUserId }, { userId: userTwoId }],
+		users: [loggedUserId, userTwoId],
 		messages: [
 			{
 				message: "Hi!",

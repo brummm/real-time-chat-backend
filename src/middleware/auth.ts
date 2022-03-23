@@ -3,6 +3,7 @@ import { CookieOptions, NextFunction, Request, Response } from "express";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { isDevelopment } from "../common/server";
 import { IUserDocument, User } from "../database/models/User";
+import psl from "psl";
 
 export const ACCESS_TOKEN_COOKIE_NAME = "token";
 export const UNAUTHORIZED = {
@@ -10,14 +11,12 @@ export const UNAUTHORIZED = {
 	httpStatusCode: 401,
 };
 
-
-declare module 'express-serve-static-core' {
+declare module "express-serve-static-core" {
 	export interface Request {
 		user?: IUserDocument;
 		token?: string;
 	}
 }
-
 
 const validateTokenAndSetRequestValues = async (
 	token: string,
@@ -81,6 +80,11 @@ const getDateDaysInFuture = (days: number): Date => {
 	return date;
 };
 
+const getDomainFromOrigin = (origin: string): string | undefined => {
+	const originHost = origin.split("/")[2];
+	return psl.get(originHost) || undefined;
+};
+
 export const createAccessTokenCookie = (
 	token: string,
 	req: Request,
@@ -93,7 +97,11 @@ export const createAccessTokenCookie = (
 		sameSite: "lax",
 	};
 	if (!isDevelopment()) {
-		cookieOptions.domain = req.get("origin");
+		const origin = req.get("origin");
+		if (origin) {
+			const domain = getDomainFromOrigin(origin);
+			if (domain) cookieOptions.domain = domain;
+		}
 	}
 	res.cookie(ACCESS_TOKEN_COOKIE_NAME, token, cookieOptions);
 };

@@ -4,7 +4,8 @@ import { USERS_PUBLIC_DATA } from "../database/models/User";
 
 export default {
 	async listChats(userId: ObjectId): Promise<IChatDocument[]> {
-		return await Chat.find({ users: userId })
+		return await Chat.find({ users: userId }, { messages: { $slice: -5 } })
+			.sort({ updatedAt: -1 })
 			.lean()
 			.populate("users", USERS_PUBLIC_DATA);
 	},
@@ -46,7 +47,12 @@ export default {
 		message: IChatMessage
 	): Promise<IChatMessage | null> {
 		const chat = await Chat.findById(chatId);
-		if (!chat || !chat.users.some((userId) => userId.toString() === message.owner.toString())) {
+		if (
+			!chat ||
+			!chat.users.some(
+				(userId) => userId.toString() === message.owner.toString()
+			)
+		) {
 			return null;
 		}
 		chat.messages.push(message);
