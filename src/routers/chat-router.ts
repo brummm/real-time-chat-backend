@@ -7,20 +7,16 @@ const ChatRouter = Router();
 
 const PREFIX = "/chats";
 
-ChatRouter.get(
-	PREFIX,
-	auth,
-	async (req: Request | any, res: Response) => {
-		try {
-			const chats = await chatService.listChats(req.user._id);
+ChatRouter.get(PREFIX, auth, async (req: Request | any, res: Response) => {
+	try {
+		const chats = await chatService.listChats(req.user._id);
 
-			res.status(200).send({ chats });
-		} catch (e) {
-			console.error(e);
-			res.status(500).send();
-		}
+		res.status(200).send({ chats });
+	} catch (e) {
+		console.error(e);
+		res.status(500).send();
 	}
-);
+});
 
 ChatRouter.get(
 	`${PREFIX}/:id`,
@@ -37,10 +33,10 @@ ChatRouter.get(
 				return res.status(404).send();
 			}
 
-			res.status(200).send({ chat });
+			return res.status(200).send({ chat });
 		} catch (e) {
 			console.error(e);
-			res.status(500).send();
+			return res.status(500).send();
 		}
 	}
 );
@@ -72,23 +68,19 @@ ChatRouter.post(
 	}
 );
 
-ChatRouter.put(
-	`${PREFIX}`,
-	auth,
-	async (req: Request | any, res: Response) => {
-		try {
-			const { message, chatId, inResponseTo } = req.body;
-			const owner = req.user.id;
-			const chatMessage: IChatMessage = { message, owner, inResponseTo };
-			const chat = await chatService.respondToChat(chatId, chatMessage);
-			if (chat === null) {
-				throw new Error();
-			}
-			return res.status(200).send(chat);
-		} catch (e) {
-			res.status(400).send();
+ChatRouter.put(`${PREFIX}`, auth, async (req: Request | any, res: Response) => {
+	try {
+		const { message, chatId, inResponseTo } = req.body;
+		const owner = req.user.id;
+		const chatMessage: IChatMessage = { message, owner, inResponseTo };
+		const chat = await chatService.respondToChat(chatId, chatMessage);
+		if (chat === null) {
+			throw new Error();
 		}
+		return res.status(200).send(chat);
+	} catch (e) {
+		return res.status(400).send();
 	}
-);
+});
 
 export default ChatRouter;

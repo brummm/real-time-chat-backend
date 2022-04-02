@@ -2,14 +2,17 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import express, { Router } from "express";
 import http from "http";
-import corsOptions from './config/cors';
+import corsOptions from "./config/cors";
 import { connect } from "./database/mongoose";
-
 
 export const createApp = (
 	port: number | string,
 	routers: Router[]
-): { app: Express.Application; server: http.Server; start: CallableFunction } => {
+): {
+	app: Express.Application;
+	server: http.Server;
+	start: CallableFunction;
+} => {
 	const app = express();
 
 	app.use(express.json());

@@ -45,7 +45,7 @@ describe("User Route tests", () => {
 				.expect(201)
 				.expect(async ({ body }) => {
 					const createdUser = body.user;
-					expect(createdUser.email).toBe(user.email);
+					expect(createdUser.userName).toBe(user.userName);
 				});
 			expect(await User.countDocuments()).toBe(users.length + 1);
 		});
@@ -74,7 +74,7 @@ describe("User Route tests", () => {
 
 	describe("/users/profile/:userName", () => {
 		it("Should get the queried user data if userName is found and the user is logged in", async () => {
-			const { userName, email } = users[0];
+			const { userName } = users[0];
 			const { token } = loggedUser.tokens[0];
 			await request(app)
 				.get(`/users/profile/${userName}`)
@@ -82,7 +82,7 @@ describe("User Route tests", () => {
 				.expect(200)
 				.expect(({ body }) => {
 					expect(body.error).toBeUndefined();
-					expect(body.user.email).toBe(email);
+					expect(body.user.userName).toBe(userName);
 				});
 		});
 	});

@@ -1,14 +1,13 @@
-import { createApp } from "../src/app";
-import ChatRouter from "../src/routers/chat-router";
 import request from "supertest";
+import { createApp } from "../src/app";
+import { Chat } from "../src/database/models/Chat";
+import ChatRouter from "../src/routers/chat-router";
 import {
 	getLoggedUserAndCookieString,
 	shouldValidateAuth,
 } from "./common/common";
-import { users, loggedUser } from "./fixtures/users";
-import { ObjectId } from "mongodb";
 import chats from "./fixtures/chats";
-import { Chat } from "../src/database/models/Chat";
+import { loggedUser, users } from "./fixtures/users";
 
 describe("Chat Route tests", () => {
 	let app: Express.Application;
@@ -18,16 +17,14 @@ describe("Chat Route tests", () => {
 		app = createdApp.app;
 	});
 
-	describe("/chats", () => {
+	describe("get /chats", () => {
 		it("Should list all chats from a user", async () => {
 			const chatsFromLoggedUser = chats.filter((chat) =>
-				chat.users.some(
-					(user) => user.toString() === loggedUser._id.toString()
-				)
+				chat.users.some((user) => user.toString() === loggedUser._id.toString())
 			);
 
-			const { user, cookieString } = getLoggedUserAndCookieString();
-			const response = await request(app)
+			const { cookieString } = getLoggedUserAndCookieString();
+			await request(app)
 				.get("/chats")
 				.set("Cookie", cookieString)
 				.expect(200)
@@ -41,12 +38,12 @@ describe("Chat Route tests", () => {
 		});
 	});
 
-	describe("/chats/start", () => {
+	describe("post /chats", () => {
 		it("Should create a new chat", async () => {
 			const { user, cookieString } = getLoggedUserAndCookieString();
 			const secondUser = users[0];
-			const response = await request(app)
-				.post("/chats/start")
+			await request(app)
+				.post("/chats")
 				.set("Cookie", cookieString)
 				.send({
 					userIds: [secondUser._id],
@@ -65,12 +62,12 @@ describe("Chat Route tests", () => {
 		});
 	});
 
-	describe("/chats/respond", () => {
+	describe("put /chats", () => {
 		it("Should respond to a given chat", async () => {
-			const { user, cookieString } = getLoggedUserAndCookieString();
+			const { cookieString } = getLoggedUserAndCookieString();
 			const originalChat = chats[0];
-			const response = await request(app)
-				.post("/chats/respond")
+			await request(app)
+				.put("/chats")
 				.set("Cookie", cookieString)
 				.send({
 					chatId: originalChat._id,
@@ -84,10 +81,10 @@ describe("Chat Route tests", () => {
 			expect(chat?.messages.length).toEqual(originalChat.messages.length + 1);
 		});
 
-		it("Should not be able to respond to a chat that the user does not belong", async () => {
-			const { user, cookieString } = getLoggedUserAndCookieString();
+		fit("Should not be able to respond to a chat that the user does not belong", async () => {
+			const { cookieString } = getLoggedUserAndCookieString();
 			const originalChat = chats[1];
-			const response = await request(app)
+			await request(app)
 				.post("/chats/respond")
 				.set("Cookie", cookieString)
 				.send({
