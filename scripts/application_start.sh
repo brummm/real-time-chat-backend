@@ -1,5 +1,5 @@
 #!/bin/bash
-DIR="/home/ec2-user/real-time-chat"
+DIR="/home/ubuntu/real-time-chat"
 sudo chmod -R 777 ${DIR}
 cd ${DIR}
 
