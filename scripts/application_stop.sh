@@ -1,3 +1,4 @@
 #!/bin/bash
 echo "Stopping any node servers/processes"
-if pgrep node; then pkill node; fi
+pkill node
+echo "All running node processes was killed."
