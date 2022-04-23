@@ -1,3 +1,3 @@
 #!/bin/bash
 echo "Stopping any node servers/processes"
-pkill node
+if pgrep node; then pkill node; fi
