@@ -1,5 +1,5 @@
 #!/bin/bash
-DIR="/var/www/html"
+DIR="/home/ubuntu/real-time-chat"
 sudo chmod -R 777 ${DIR}
 cd ${DIR}
 

@@ -9,7 +9,7 @@ nvm alias default 18.0.0
 
 
 
-DIR="/var/www/html"
+DIR="/home/ubuntu/real-time-chat"
 if [ -d "$DIR" ]; then
   echo "${DIR} exists."
 else
