@@ -4,9 +4,13 @@ import { model, Schema, Document, Model, ObjectId } from "mongoose";
 import mongodb from "mongodb";
 import validator from "validator";
 
-export const USER_LEVELS = {
-	ADMIN: "admin",
-	REGULAR: "regular",
+export const USER_ROLES = {
+	MANAGER: "manager",
+	USER: "user",
+};
+
+export const userRoleExists = (role: string): boolean => {
+	return Object.values(USER_ROLES).findIndex((_role) => _role === role) !== -1;
 };
 
 export const MAX_USERNAME_LENGTH = 15;
@@ -20,11 +24,12 @@ export interface IUser {
 	lastName: string;
 	fullName?: string;
 	userName: string;
-	level: string;
+	role: string;
 	email: string;
 	password: string;
 	birth: Date;
 	tokens: IToken[];
+	multiavatar?: string;
 }
 
 export interface IUserDocument extends IUser, Document {
@@ -44,15 +49,6 @@ interface IUserModel extends Model<IUserDocument> {
 
 const userSchema = new Schema<IUserDocument>(
 	{
-		firstName: {
-			type: String,
-			required: [true, 'O campo "nome" é obrigatório'],
-			trim: true,
-		},
-		lastName: {
-			type: String,
-			trim: true,
-		},
 		userName: {
 			type: String,
 			trim: true,
@@ -62,16 +58,25 @@ const userSchema = new Schema<IUserDocument>(
 			],
 			unique: true,
 		},
-		level: {
+		firstName: {
+			type: String,
+			required: [true, "First name is required."],
+			trim: true,
+		},
+		lastName: {
+			type: String,
+			trim: true,
+		},
+		role: {
 			type: String,
 			required: true,
 			trim: true,
-			enum: USER_LEVELS,
-			default: USER_LEVELS.REGULAR,
+			enum: USER_ROLES,
+			default: USER_ROLES.USER,
 		},
 		email: {
 			type: String,
-			required: [true, 'O campo "e-mail" é obrigatório'],
+			required: [true, "E-mail is required."],
 			trim: true,
 			lowercase: true,
 			unique: true,
@@ -79,23 +84,36 @@ const userSchema = new Schema<IUserDocument>(
 				validator: function (value: string) {
 					return validator.isEmail(value);
 				},
-				message: (props) => 'O campo "e-mail" é obrigatório',
+				message: (props) => "E-mail is required.",
 			},
 		},
 		password: {
 			type: String,
-			required: [true, 'O campo "senha" é obrigatório'],
+			required: [true, "Password is required."],
 			trim: true,
 			minlength: 6,
 			max: 30,
 		},
+
 		birth: {
 			type: Date,
-			required: [true, 'O campo "data de nascimento" é obrigatório'],
-			max: [
-				new Date(),
-				'Você preencheu o campo "data de nascimento" com um valor inválido.',
-			],
+			required: [true, "Date of birth is required"],
+			max: [new Date(), "Date of birth is invalid."],
+		},
+		multiavatar: {
+			type: String,
+			validate: {
+				validator: function (value: string) {
+					if (value.length !== 12) {
+						return false;
+					}
+					if (!value.match(/^[0-9]+$/)) {
+						return false;
+					}
+					return true;
+				},
+				message: (props) => "Avatar code is invalid.",
+			},
 		},
 		tokens: [
 			{
@@ -137,7 +155,13 @@ userSchema.methods.generateAuthToken = async function (
 	return token;
 };
 
-export const USERS_PUBLIC_DATA = ["_id", "firstName", "lastName", "userName"];
+export const USERS_PUBLIC_DATA = [
+	"_id",
+	"firstName",
+	"lastName",
+	"userName",
+	"multiavatar",
+];
 
 userSchema.methods.toJSON = function () {
 	const user = this;
@@ -150,8 +174,11 @@ userSchema.methods.toJSON = function () {
 	return publicProfile;
 };
 
-export const SIGNIN_ERROR = "Invalid username and/or password.";
-userSchema.statics.findByCredentials = async (email, password): Promise<IUserDocument> => {
+export const SIGNIN_ERROR = "Invalid e-mail and/or password.";
+userSchema.statics.findByCredentials = async (
+	email,
+	password
+): Promise<IUserDocument> => {
 	const user = await User.findOne({ email });
 
 	if (!user) {
@@ -223,7 +250,7 @@ userSchema.methods.canEdit = async function (id: string, what: string) {
 };
 
 userSchema.statics.findAllRegulars = async () => {
-	return User.find({ level: USER_LEVELS.REGULAR });
+	return User.find({ role: USER_ROLES.USER });
 };
 
 userSchema.statics.alreadyExistsWithSameEmail = async (email) => {

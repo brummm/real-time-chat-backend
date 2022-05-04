@@ -22,7 +22,7 @@ export default {
 	async createOrReturnChat(
 		userIds: string[],
 		message?: IChatMessage
-	): Promise<IChatDocument> {
+	): Promise<{ chat: IChatDocument }> {
 		let chat = await Chat.findOne({ users: userIds });
 		if (chat) {
 			const messages = chat.messages;
@@ -39,7 +39,7 @@ export default {
 			});
 			await chat.save();
 		}
-		return chat;
+		return { chat };
 	},
 
 	async respondToChat(
