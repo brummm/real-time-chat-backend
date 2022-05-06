@@ -23,7 +23,8 @@ export default {
 		userIds: string[],
 		message?: IChatMessage
 	): Promise<{ chat: IChatDocument }> {
-		let chat = await Chat.findOne({ users: userIds });
+		const objectIds = userIds.map((id) => new ObjectId(id));
+		let chat = await Chat.findOne({ users: { $all: objectIds } });
 		if (chat) {
 			const messages = chat.messages;
 			if (message) {
