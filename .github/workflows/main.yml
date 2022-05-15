@@ -26,8 +26,8 @@ jobs:
             FRONTEND_URL
             MONGO_URI
         env:
-          NODE_ENV: production
-          PORT: 80
-          JWT_SECRET: ${{ secrets.JWT_SECRET }}
-          FRONTEND_URL: https://chat-frontend.rogeriobrum.com
-          MONGO_URI: ${{ secrets.MONGO_URI }}
+          NODE_ENV: "production"
+          PORT: "80"
+          JWT_SECRET: ${{secrets.JWT_SECRET}}
+          FRONTEND_URL: "https://chat-frontend.rogeriobrum.com"
+          MONGO_URI: ${{secrets.MONGO_URI}}
