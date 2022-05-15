@@ -21,7 +21,7 @@ jobs:
           usedocker: true
           docker_build_args: |
             NODE_ENV
-            PORT=3301
+            PORT
             JWT_SECRET
             FRONTEND_URL
             MONGO_URI
