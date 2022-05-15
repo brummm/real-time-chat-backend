@@ -7,7 +7,7 @@ COPY package*.json ./
 
 COPY . .
 
-RUN npm install
+RUN npm i -g typescript && npm install
 
 EXPOSE ${PORT}
 
