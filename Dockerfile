@@ -11,4 +11,4 @@ RUN npm i -g typescript && npm install
 
 EXPOSE ${PORT}
 
-CMD ["npm", "start"]
+CMD ["npm", "run", "start_within_container"]
