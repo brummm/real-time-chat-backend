@@ -18,13 +18,6 @@ jobs:
           heroku_api_key: ${{secrets.HEROKU_API_KEY}}
           heroku_app_name: "rt-chat-backend" #Must be unique in Heroku
           heroku_email: "rogeriobrum@gmail.com"
-          usedocker: true
-          docker_build_args: |
-            NODE_ENV
-            PORT
-            JWT_SECRET
-            FRONTEND_URL
-            MONGO_URI
         env:
           NODE_ENV: "production"
           PORT: "80"
