@@ -1,5 +1,5 @@
 # Real Time Chat Backend
-Real time chat API using socket.io (WIP)
+Real time chat API using socket.io
 
 ## How to run
 ### DEV
@@ -7,15 +7,8 @@ Create a `/.env` file containing the parameteres needed for the project to run. 
 
 Every time you run the `npm run dev` script `/.env` file is copied into `/dev.env` file.
 
-## Deployment (AWS)
-Add this script into the user data configuration:
-```
-#!/bin/bash
-sudo apt update
-sudo apt install -y ruby-full
-sudo apt install -y wget
-cd /home/ubuntu
-wget https://aws-codedeploy-us-east-1.s3.amazonaws.com/latest/install
-chmod +x ./install
-sudo ./install auto > /tmp/logfile
-```
+## Deployment
+
+The deployment is currently being made at Heroku using github actions.
+
+The Docker file within this repo is only used into Heroku (but it could be used as a development machine as well).
