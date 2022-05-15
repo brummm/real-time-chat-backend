@@ -1,7 +1,7 @@
-import { createSocket } from "./socket/socket";
 import fs from "fs";
 import path from "path";
 import { createApp } from "./app";
+import { createSocket } from "./socket/socket";
 
 const port = process.env.PORT || 3301;
 process.on("uncaughtException", (err) => {
